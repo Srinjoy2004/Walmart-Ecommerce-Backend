@@ -28,11 +28,27 @@ export const createProduct = async (req, res) => {
 };
 
 /**
- * Get All Products
+ * Get All Products (with optional filters)
  */
 export const getProducts = async (req, res) => {
   try {
-    const products = await Product.find({});
+    const { search, category, subcategory } = req.query;
+
+    const filter = {};
+
+    if (search) {
+      filter.name = { $regex: search, $options: "i" };
+    }
+
+    if (category) {
+      filter.category = category;
+    }
+
+    if (subcategory) {
+      filter.subcategory = subcategory;
+    }
+
+    const products = await Product.find(filter);
     res.json(products);
   } catch (error) {
     console.error(error);
